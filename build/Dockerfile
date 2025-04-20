@@ -109,12 +109,12 @@ ENV PATH="$PATH:/home/$USERNAME/.pulumi/bin"
 # # Define the volume for the .bashrc file
 # VOLUME /home/$USERNAME/
 
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+# RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
-# Prepare for nushell
-RUN mkdir -p /home/$USERNAME/.config/nushell && \
-    chown $USERNAME:$USERNAME /home/$USERNAME/.config/nushell
-RUN touch /home/$USERNAME/.config/nushell/default.nu
+# # Prepare for nushell
+# RUN mkdir -p /home/$USERNAME/.config/nushell && \
+#     chown $USERNAME:$USERNAME /home/$USERNAME/.config/nushell
+# RUN touch /home/$USERNAME/.config/nushell/default.nu
 
 USER root
 # Install Pulumi as root
