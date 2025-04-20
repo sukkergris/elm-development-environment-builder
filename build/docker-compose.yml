@@ -1,0 +1,14 @@
+# docker-compose.yml
+services:
+  app: # Or name it 'devcontainer', 'workspace', etc.
+    # Use variable substitution for the image name
+    image: ${DOCKER_USERNAME}/${REPO_NAME}:${IMAGE_TAG}
+    build:
+      context: . # Your project root
+      dockerfile: Dockerfile
+    # Add other service configurations if needed (ports, volumes, etc.)
+    # command: sleep infinity # Keep container running if needed for devcontainer attach
+
+# You might not need a 'services' section if you only want to build/push
+# an image managed outside of compose runtime.
+# But defining it allows `docker compose build/push`.
