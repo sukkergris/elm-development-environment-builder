@@ -1,6 +1,4 @@
 # .devcontainer/docker-compose.yml
-version: '3.8' # Specify Compose file version
-
 services:
   # Define our main development service, let's call it 'dev'
   dev:

@@ -29,7 +29,7 @@ RUN apk update && \
     xclip \
     ripgrep \
     alpine-sdk \
-    dotnet9-sdk \
+    dotnet8-sdk \
     bash \
     zsh \
     tree \
@@ -38,6 +38,7 @@ RUN apk update && \
     nushell \
     tmux \
     grep \
+    jq \
     curl \
     nodejs \
     npm \
@@ -86,43 +87,14 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 # https://stackoverflow.com/questions/38024160/how-to-get-etc-profile-to-run-automatically-in-alpine-docker
 ENV ENV=/home/$USERNAME/.profile
 
-# RUN cp -r /root/.config/nushell $HOME_DIR/.config/
-# RUN echo "Hello world"
-# RUN nu -c 'echo $nu.config-path'
-
 USER $USERNAME
 ARG PULUMI_VERSION=3.143.0
 RUN curl -fsSL https://get.pulumi.com/ | bash -s -- --version $PULUMI_VERSION --install-dir /home/container-user/.pulumi
 ENV PATH="$PATH:/home/$USERNAME/.pulumi/bin"
 
-# # Install Nuke Global Tool
-# RUN dotnet tool install --global Nuke.GlobalTool
-# RUN dotnet tool install --global dotnet-ef
-# RUN dotnet tool install --global dotnet-format
-# ENV PATH="$PATH:~/.dotnet/tools"
-
-
-# # Run LunarVim installation as the non-root user
-# RUN curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/$LV_BRANCH/utils/installer/install.sh | \
-#     bash -s -- --no-install-dependencies
-
-# # Define the volume for the .bashrc file
-# VOLUME /home/$USERNAME/
-
-# RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-# # Prepare for nushell
-# RUN mkdir -p /home/$USERNAME/.config/nushell && \
-#     chown $USERNAME:$USERNAME /home/$USERNAME/.config/nushell
-# RUN touch /home/$USERNAME/.config/nushell/default.nu
-
+RUN dotnet tool install --global csharp-ls
+ENV PATH="$PATH:~/.dotnet/tools"
 USER root
-# Install Pulumi as root
-# ARG PULUMI_VERSION=3.143.0
-# RUN curl -fsSL https://get.pulumi.com/ | bash -s -- --version $PULUMI_VERSION && \
-#     mv ~/.pulumi/bin/* /usr/bin
-
-# ENV PATH="$PATH:/home/$USERNAME/.pulumi/bin"
 
 # Create and activate a virtual environment for Azure CLI
 RUN python3 -m venv /opt/venv \
@@ -132,15 +104,15 @@ RUN python3 -m venv /opt/venv \
   && deactivate
 
 # Clean up unnecessary build tools
-RUN apk del \
-  gcc \
-  musl-dev \
-  python3-dev \
-  libffi-dev \
-  openssl-dev \
-  cargo \
-  make \
-  && rm -rf /var/cache/apk/*
+# RUN apk del \
+#   gcc \
+#   musl-dev \
+#   python3-dev \
+#   libffi-dev \
+#   openssl-dev \
+#   cargo \
+#   make \
+#   && rm -rf /var/cache/apk/*
 
 # Update PATH to include the virtual environment
 ENV PATH="/opt/venv/bin:$PATH"
