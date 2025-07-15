@@ -20,7 +20,7 @@ services:
       # Instead of COPY in Dockerfile, you could mount it here:
       # Ensure the source path '../.nvim' exists in your project root.
       # - ../.nvim:/root/.config/nvim:cached
-         # --- ADD THIS LINE ---
+      # --- ADD THIS LINE ---
       # Mount the project's nvim config into the root user's config dir
       # Source: ./.config/nvim (relative to this docker-compose.yml file)
       # Target: /root/.config/nvim (where nvim looks when run as root)

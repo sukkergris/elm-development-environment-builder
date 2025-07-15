@@ -29,7 +29,7 @@ RUN apk update && \
     xclip \
     ripgrep \
     alpine-sdk \
-    dotnet8-sdk \
+    dotnet9-sdk \
     bash \
     zsh \
     tree \
@@ -91,6 +91,9 @@ USER $USERNAME
 ARG PULUMI_VERSION=3.143.0
 RUN curl -fsSL https://get.pulumi.com/ | bash -s -- --version $PULUMI_VERSION --install-dir /home/container-user/.pulumi
 ENV PATH="$PATH:/home/$USERNAME/.pulumi/bin"
+
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
+RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/$USERNAME/.oh-my-zsh/custom/themes/powerlevel10k
 
 RUN dotnet tool install --global csharp-ls
 ENV PATH="$PATH:~/.dotnet/tools"

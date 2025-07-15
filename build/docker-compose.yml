@@ -8,7 +8,6 @@ services:
       dockerfile: Dockerfile
     # Add other service configurations if needed (ports, volumes, etc.)
     # command: sleep infinity # Keep container running if needed for devcontainer attach
-
 # You might not need a 'services' section if you only want to build/push
 # an image managed outside of compose runtime.
 # But defining it allows `docker compose build/push`.
