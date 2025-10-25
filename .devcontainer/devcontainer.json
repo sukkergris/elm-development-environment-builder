@@ -1,5 +1,5 @@
 {
-  "name": "Test Elm Dev Container (Alpine + Compose)",
+  "name": "Test Elm Dev Container (Debian + Compose)",
 
   // --- Use Docker Compose configuration ---
   // Point to your docker-compose file (relative to .devcontainer folder)

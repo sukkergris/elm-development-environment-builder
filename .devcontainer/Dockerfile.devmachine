@@ -1,1 +1,1 @@
-FROM isuperman/elm-devcontainer-foundation:0.1.2
+FROM isuperman/elm-devcontainer-foundation:0.1.3

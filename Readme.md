@@ -92,12 +92,21 @@ docker exec -it build-app-1 zsh
 └── elm/                # Elm application source
     ├── elm.json        # Elm project configuration
     └── src/            # Elm source code
-        └── Main.elm    # Entry point for Elm application
+        └── Main.elm    # Simple "Hello World" Elm application
 ```
 
 ## 🧩 Elm Project Development
 
-To start a new Elm project inside the container:
+The repository includes a simple "Hello World" Elm application to get you started. To run the example:
+
+```bash
+cd /workspace/elm
+elm reactor
+```
+
+Then open your browser to `http://localhost:8000` and click on `src/Main.elm` to see the application.
+
+To start a new Elm project from scratch:
 
 ```bash
 cd /workspace/elm
@@ -116,6 +125,11 @@ To access the Elm application in your browser:
 # From inside the container
 $BROWSER http://localhost:8000
 ```
+
+The included example demonstrates:
+- Basic Elm architecture (Model, Update, View)
+- HTML generation with styling
+- A welcoming "Hello World" interface
 
 ## 🔧 Customization
 

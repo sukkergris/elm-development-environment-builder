@@ -1,121 +1,99 @@
-# Use a stable version of Alpine as the base image
-FROM alpine:3.21.0
+FROM debian:12-slim
 
 # Set up the working directory
 WORKDIR /tmp
 
 # Set environment variables
-ENV HOME_DIR="/home/container-user"
-# ENV LV_BRANCH="release-1.4/neovim-0.9"
-ENV PATH="$PATH:$HOME_DIR/.local/bin"
+ENV USERNAME=container-user \
+    HOME_DIR="/home/container-user" \
+    PATH="$PATH:/home/container-user/.local/bin:/opt/venv/bin:/home/container-user/.dotnet/tools" \
+    DEBIAN_FRONTEND=noninteractive \
+    ENV="/home/container-user/.bashrc"
 
 # Install dependencies
-RUN apk update && \
-    apk add --no-cache \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     python3 \
-    py3-pip \
+    python3-pip \
+    python3-venv \
     gcc \
-    musl-dev \
+    libc6-dev \
     python3-dev \
     libffi-dev \
-    openssl-dev \
+    libssl-dev \
     cargo \
     make \
     yarn \
     git \
-    openssh \
+    openssh-client \
     neovim \
-    neovim-doc \
     xclip \
     ripgrep \
-    alpine-sdk \
-    dotnet9-sdk \
+    build-essential \
     bash \
     zsh \
     tree \
     stow \
     unzip \
-    nushell \
     tmux \
     grep \
     jq \
     curl \
+    wget \
     nodejs \
     npm \
     sudo \
-    libc6-compat  # Install if needed for compatibility with Elm binaries
+    ca-certificates \
+    gnupg \
+    lsb-release && \
+    rm -rf /var/lib/apt/lists/*
 
-# Configuring Elm version
+# Install .NET 9 SDK via script
+# Install .NET 9 SDK to a shared location
+ENV DOTNET_ROOT=/opt/dotnet
+ENV PATH=$PATH:/opt/dotnet:/opt/dotnet/tools
+
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh \
+    && chmod +x dotnet-install.sh \
+    && ./dotnet-install.sh --version 9.0.306 --install-dir $DOTNET_ROOT \
+    && rm dotnet-install.sh
+
+ENV PATH="$PATH:/opt/dotnet/tools"
+
+# Create non-root user and home directory
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN addgroup --system $USERNAME && \
+    adduser --system --ingroup $USERNAME --shell /bin/sh --home $HOME_DIR $USERNAME && \
+    mkdir -p $HOME_DIR && \
+    chown -R $USERNAME:$USERNAME $HOME_DIR
+
+# Install Elm and supporting tools
 ARG ELM_VERSION=latest-0.19.1
 ARG ELM_TEST_VERSION=latest-0.19.1
 ARG ELM_FORMAT_VERSION=latest-0.19.1
-
-# This Dockerfile adds a non-root user with sudo access.
-ARG USERNAME=container-user
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
-# Add a non-root user and group
-RUN addgroup -S $USERNAME && \
-    adduser -S $USERNAME -G $USERNAME --shell /bin/sh
-
-# Install Elm using the provided method, elm-test and elm-format via npm
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    # Install Elm binary
-    curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz && \
+RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz && \
     gunzip elm.gz && \
     chmod +x elm && \
     mv elm /usr/local/bin/elm && \
-    # Install elm-test and elm-format via npm
     npm install --global \
-        elm-test@${ELM_TEST_VERSION} \
-        elm-format@${ELM_FORMAT_VERSION} \
-        elm-watch@beta && \
-    # [Optional] Update UID/GID if needed
-    if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then \
-        groupmod --gid $USER_GID $USERNAME && \
-        usermod --uid $USER_UID --gid $USER_GID $USERNAME && \
-        chown -R $USER_UID:$USER_GID /home/$USERNAME; \
-    fi && \
-    # Create the elm cache directory where we can mount a volume
-    mkdir /home/$USERNAME/.elm && \
-    chown $USERNAME:$USERNAME /home/$USERNAME/.elm && \
-    # Create the .azure directory
-    mkdir -p /home/container-user/.azure && \
-    chown $USERNAME:$USERNAME /home/$USERNAME/.azure
+        elm-test@$ELM_TEST_VERSION \
+        elm-format@$ELM_FORMAT_VERSION \
+        elm-watch@beta
 
-# https://stackoverflow.com/questions/38024160/how-to-get-etc-profile-to-run-automatically-in-alpine-docker
-ENV ENV=/home/$USERNAME/.profile
 
+# Switch to non-root user
 USER $USERNAME
-ARG PULUMI_VERSION=3.143.0
-RUN curl -fsSL https://get.pulumi.com/ | bash -s -- --version $PULUMI_VERSION --install-dir /home/container-user/.pulumi
-ENV PATH="$PATH:/home/$USERNAME/.pulumi/bin"
 
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
-RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /home/$USERNAME/.oh-my-zsh/custom/themes/powerlevel10k
+# Install Oh My Zsh and Powerlevel10k theme
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true && \
+    mkdir -p $HOME_DIR/.oh-my-zsh/custom/themes && \
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME_DIR/.oh-my-zsh/custom/themes/powerlevel10k
 
+# Install dotnet tool
 RUN dotnet tool install --global csharp-ls
+
 ENV PATH="$PATH:~/.dotnet/tools"
+
+# Switch back to root for final setup or cleanup
 USER root
-
-# Create and activate a virtual environment for Azure CLI
-RUN python3 -m venv /opt/venv \
-  && . /opt/venv/bin/activate \
-  && pip install --upgrade pip \
-  && pip install --no-cache-dir azure-cli \
-  && deactivate
-
-# Clean up unnecessary build tools
-# RUN apk del \
-#   gcc \
-#   musl-dev \
-#   python3-dev \
-#   libffi-dev \
-#   openssl-dev \
-#   cargo \
-#   make \
-#   && rm -rf /var/cache/apk/*
-
-# Update PATH to include the virtual environment
-ENV PATH="/opt/venv/bin:$PATH"
