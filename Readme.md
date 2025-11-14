@@ -1,7 +1,7 @@
 # Elm Development Environment Builder
 
-[![Alpine Linux v3.21](https://img.shields.io/badge/Alpine%20Linux-v3.21-0D597F?style=flat-square&logo=alpine-linux)](https://alpinelinux.org/)
 [![Elm 0.19.1](https://img.shields.io/badge/Elm-0.19.1-60B5CC?style=flat-square&logo=elm)](https://elm-lang.org/)
+[![Node.js 18.20.4](https://img.shields.io/badge/Node.js-18.20.4-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
 [![.NET SDK 9](https://img.shields.io/badge/.NET%20SDK-9-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 
@@ -17,6 +17,7 @@ A containerized development environment for Elm projects, running on Alpine Linu
 - **Development Tools**:
   - Neovim with plugins
   - .NET SDK 9
+  - Node.js 18.20.4 with npm 9.2.0
   - Git, SSH, and other essential utilities
   - ZSH with Oh-My-ZSH and Powerlevel10k theme
   - Nushell and Tmux for terminal productivity

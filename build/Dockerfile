@@ -56,6 +56,7 @@ ENV PATH=$PATH:/opt/dotnet:/opt/dotnet/tools
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh \
     && chmod +x dotnet-install.sh \
     && ./dotnet-install.sh --version 9.0.306 --install-dir $DOTNET_ROOT \
+    && ./dotnet-install.sh --version 10.0.100 --install-dir $DOTNET_ROOT \
     && rm dotnet-install.sh
 
 ENV PATH="$PATH:/opt/dotnet/tools"
@@ -91,9 +92,12 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME_DIR/.oh-my-zsh/custom/themes/powerlevel10k
 
 # Install dotnet tool
-RUN dotnet tool install --global csharp-ls
+RUN dotnet tool install --global csharp-ls && \
+    dotnet tool install --global dotnet-script
 
 ENV PATH="$PATH:~/.dotnet/tools"
 
 # Switch back to root for final setup or cleanup
 USER root
+
+RUN curl -sL https://taskfile.dev/install.sh | sh -s -- -d -b /usr/local/bin

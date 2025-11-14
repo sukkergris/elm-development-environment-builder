@@ -9,6 +9,7 @@ tasks:
   default:
     cmds:
       - echo "{{.GREETING}}"
+      - task -l
     silent: true
   build:
     desc: Build using version number from .env
