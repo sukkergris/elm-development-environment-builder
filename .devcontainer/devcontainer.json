@@ -26,7 +26,13 @@
       },
       "extensions": [
         "ms-vscode-remote.remote-containers",
-        "Elmtooling.elm-ls-vscode"
+        "Elmtooling.elm-ls-vscode",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
+        "EditorConfig.EditorConfig",
+        "elmTooling.elm-ls-vscode",
+        "csharpier.csharpier-vscode"
       ]
     }
   },
