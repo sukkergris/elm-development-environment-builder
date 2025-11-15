@@ -56,7 +56,8 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 # Install .NET SDK (consolidated into one layer, fixed version)
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
-    ./dotnet-install.sh --version latest --channel 9.0 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --version 10.0.100 --channel 9.0 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --version 9.0.307 --channel 9.0 --install-dir $DOTNET_ROOT && \
     rm dotnet-install.sh
 
 # Install Elm and tools (consolidated, removed unnecessary args)
@@ -78,7 +79,9 @@ WORKDIR $HOME_DIR
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME_DIR/.oh-my-zsh/custom/themes/powerlevel10k && \
     dotnet tool install --global csharp-ls && \
-    dotnet tool install --global dotnet-script
+    dotnet tool install --global dotnet-script && \
+    dotnet tool install -g csharpier && \
+    dotnet tool install -g dotnet-format
 
 # Set final working directory
 WORKDIR /workspace
