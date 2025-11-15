@@ -61,6 +61,8 @@ RUN groupadd --gid $USER_GID $USERNAME && \
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
     ./dotnet-install.sh --version 10.0.100 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --runtime aspnetcore --channel 9.0 --install-dir $DOTNET_ROOT && \
+    # ./dotnet-install.sh --version 9.0.307 --install-dir $DOTNET_ROOT && \
     rm dotnet-install.sh
 
 # Install Elm and tools (consolidated, removed unnecessary args)
@@ -80,10 +82,11 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
     . "$NVM_DIR/nvm.sh" && \
     nvm install "$NODE_VERSION" && \
     nvm alias default "$NODE_VERSION" && \
+    nvm use default && \
     node_bin="$NVM_DIR/versions/node/$(nvm version default)/bin" && \
-    sudo ln -s "$node_bin/node" /usr/local/bin/node && \
-    sudo ln -s "$node_bin/npm"  /usr/local/bin/npm && \
-    sudo ln -s "$node_bin/npx"  /usr/local/bin/npx
+    sudo ln -sf "$node_bin/node" /usr/local/bin/node && \
+    sudo ln -sf "$node_bin/npm"  /usr/local/bin/npm && \
+    sudo ln -sf "$node_bin/npx"  /usr/local/bin/npx
 
 # Install user-specific tools in one layer
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
