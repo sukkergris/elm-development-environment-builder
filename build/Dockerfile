@@ -10,7 +10,7 @@ ENV USERNAME=container-user \
     NODE_VERSION=24.11.1
 
 # Update PATH once with all directories
-ENV PATH="/opt/dotnet:/opt/dotnet/tools:/home/container-user/.local/bin:/home/container-user/.dotnet/tools:$PATH"
+ENV PATH="/usr/local/bin:/opt/dotnet:/opt/dotnet/tools:/home/container-user/.local/bin:/home/container-user/.dotnet/tools:$PATH"
 
 # Install all system dependencies FIRST
 RUN apt-get update && \
@@ -30,7 +30,6 @@ RUN apt-get update && \
     yarn \
     git \
     openssh-client \
-    neovim \
     xclip \
     ripgrep \
     build-essential \
@@ -56,6 +55,15 @@ RUN groupadd --gid $USER_GID $USERNAME && \
     useradd --uid $USER_UID --gid $USER_GID --create-home --shell /bin/bash $USERNAME && \
     # Remove pw from every sudo making me able to play more. Requires sudo is installed. DON'T EVER USE FOR PRODUCTION!
     echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Install latest nvim
+RUN NVIM_FILE="nvim-linux-arm64.tar.gz" && \
+    echo "Installing Neovim for ARM64 (Mac M3)..." && \
+    curl -LO "https://github.com/neovim/neovim/releases/latest/download/${NVIM_FILE}" && \
+    tar -C /opt -xzf "${NVIM_FILE}" && \
+    rm "${NVIM_FILE}" && \
+        # Link the binary to /usr/local/bin so it's globally available - remember to add '/usr/local/bin/' to path!
+    ln -s /opt/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
 
 # Install .NET SDK (consolidated into one layer, fixed version)
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
