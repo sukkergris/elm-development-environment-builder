@@ -65,10 +65,11 @@ RUN NVIM_FILE="nvim-linux-arm64.tar.gz" && \
         # Link the binary to /usr/local/bin so it's globally available - remember to add '/usr/local/bin/' to path!
     ln -s /opt/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
 
-# Install .NET SDK (consolidated into one layer, fixed version)
+# Install .NET SDK and runtimes (consolidated into one layer, fixed versions)
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
     ./dotnet-install.sh --version 10.0.100 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --runtime dotnet --version 8.0.18 --install-dir $DOTNET_ROOT && \
     ./dotnet-install.sh --runtime aspnetcore --channel 9.0 --install-dir $DOTNET_ROOT && \
     # ./dotnet-install.sh --version 9.0.307 --install-dir $DOTNET_ROOT && \
     rm dotnet-install.sh
@@ -83,6 +84,8 @@ RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/b
 # Switch to non-root user for remaining setup
 USER $USERNAME
 WORKDIR $HOME_DIR
+
+RUN mkdir -p $HOME_DIR/.elm
 
 # Install nvm + Node and expose binaries system-wide
 ENV NVM_DIR=/home/${USERNAME}/.nvm
@@ -104,6 +107,7 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     dotnet tool install --global csharpier && \
     dotnet tool install --global dotnet-format && \
     npm install --global \
+    # elm \
     elm-test@latest-0.19.1 \
     elm-format@latest-0.19.1 \
     elm-watch@beta

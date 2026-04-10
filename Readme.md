@@ -1,27 +1,27 @@
 # Elm Development Environment Builder
 
 [![Elm 0.19.1](https://img.shields.io/badge/Elm-0.19.1-60B5CC?style=flat-square&logo=elm)](https://elm-lang.org/)
-[![Node.js 18.20.4](https://img.shields.io/badge/Node.js-18.20.4-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
+[![Node.js 24.11.1](https://img.shields.io/badge/Node.js-24.11.1-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
-[![.NET SDK 9](https://img.shields.io/badge/.NET%20SDK-9-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![.NET SDK 10.0.100](https://img.shields.io/badge/.NET%20SDK-10.0.100-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 
-A containerized development environment for Elm projects, running on Alpine Linux. This repository provides everything you need to start building Elm applications with a consistent, reproducible environment.
+A containerized development environment for Elm projects, running on Debian 12 slim. This repository provides everything you need to start building Elm applications with a consistent, reproducible environment.
 
 ## 🚀 Features
 
-- **Alpine Linux v3.21** base for lightweight containers
+- **Debian 12 slim** base image
 - **Elm 0.19.1** pre-installed with common tools:
   - elm-test
   - elm-format
   - elm-watch (beta)
 - **Development Tools**:
   - Neovim with plugins
-  - .NET SDK 9
-  - Node.js 18.20.4 with npm 9.2.0
+  - .NET SDK 10.0.100
+  - .NET Runtime 8.0.18 and ASP.NET Core Runtime 9.x
+  - Node.js 24.11.1 via nvm
   - Git, SSH, and other essential utilities
   - ZSH with Oh-My-ZSH and Powerlevel10k theme
-  - Nushell and Tmux for terminal productivity
-  - Azure CLI for cloud operations
+  - Tmux for terminal productivity
 - **Containerized workflow** for consistent development across machines
 - **VS Code integration** ready (devcontainer compatible)
 
@@ -58,7 +58,7 @@ git clone https://github.com/yourusername/elm-development-environment-builder.gi
 cd elm-development-environment-builder
 ```
 
-2. Build and start the container:
+1. Build and start the container:
 
 ```bash
 # Set your Docker Hub username and desired image tag
@@ -74,7 +74,7 @@ docker compose build
 docker compose up -d
 ```
 
-3. Connect to the running container:
+1. Connect to the running container:
 
 ```bash
 docker exec -it build-app-1 zsh
@@ -128,6 +128,7 @@ $BROWSER http://localhost:8000
 ```
 
 The included example demonstrates:
+
 - Basic Elm architecture (Model, Update, View)
 - HTML generation with styling
 - A welcoming "Hello World" interface
@@ -153,6 +154,7 @@ Edit the `build/Dockerfile` to add or modify tools and dependencies based on you
 - Use `elm-watch` for hot reloading during development
 - The Elm compiler and tools are available globally in the PATH
 - Dotnet tools can be accessed through the `dotnet` command
+- If a global dotnet tool requires .NET 8 (for example `sq`), the image includes `Microsoft.NETCore.App 8.0.18` at `/opt/dotnet`
 
 ## 🔒 Security Notes
 
@@ -164,7 +166,7 @@ Edit the `build/Dockerfile` to add or modify tools and dependencies based on you
 
 - [Elm Language Documentation](https://guide.elm-lang.org/)
 - [Elm Package Catalog](https://package.elm-lang.org/)
-- [Alpine Linux Documentation](https://docs.alpinelinux.org/)
+- [Debian Documentation](https://www.debian.org/doc/)
 - [Docker Documentation](https://docs.docker.com/)
 
 ## 📄 License
