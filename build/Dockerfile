@@ -79,7 +79,9 @@ RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/b
     gunzip elm.gz && \
     chmod +x elm && \
     mv elm /usr/local/bin/elm && \
-    curl -sL https://taskfile.dev/install.sh | sh -s -- -d -b /usr/local/bin
+    TASK_VERSION="v3.52.0" && \
+    TASK_URL="https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_arm64.tar.gz" && \
+    curl -L "$TASK_URL" | tar -xz -C /usr/local/bin task
 
 # Switch to non-root user for remaining setup
 USER $USERNAME
