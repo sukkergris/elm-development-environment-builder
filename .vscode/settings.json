@@ -12,6 +12,7 @@
         "NOPASSWD",
         "nvim",
         "openssh",
+        "taskfile",
         "venv",
         "xclip"
     ]
