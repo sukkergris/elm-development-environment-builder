@@ -68,18 +68,20 @@ RUN NVIM_FILE="nvim-linux-arm64.tar.gz" && \
 # Install .NET SDK and runtimes (consolidated into one layer, fixed versions)
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
     chmod +x dotnet-install.sh && \
-    ./dotnet-install.sh --version 10.0.100 --install-dir $DOTNET_ROOT && \
-    ./dotnet-install.sh --runtime dotnet --version 8.0.18 --install-dir $DOTNET_ROOT && \
-    ./dotnet-install.sh --runtime aspnetcore --channel 9.0 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --version 10.0.302 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --runtime dotnet --version 8.0.29 --install-dir $DOTNET_ROOT && \
+    ./dotnet-install.sh --runtime dotnet --version 9.0.18 --install-dir $DOTNET_ROOT && \
     # ./dotnet-install.sh --version 9.0.307 --install-dir $DOTNET_ROOT && \
     rm dotnet-install.sh
 
 # Install Elm and tools (consolidated, removed unnecessary args)
-RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz && \
+ENV ELM_VERSION=0.19.2
+ENV TASK_VERSION=v3.52.0
+RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/${ELM_VERSION}/elm-0.19.2-linux-arm.gz && \
+# RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/${ELM_VERSION}/binary-for-linux-64-bit.gz && \
     gunzip elm.gz && \
     chmod +x elm && \
     mv elm /usr/local/bin/elm && \
-    TASK_VERSION="v3.52.0" && \
     TASK_URL="https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_arm64.tar.gz" && \
     curl -L "$TASK_URL" | tar -xz -C /usr/local/bin task
 
@@ -113,6 +115,3 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
     elm-test@latest-0.19.1 \
     elm-format@latest-0.19.1 \
     elm-watch@beta
-
-# Set final working directory
-WORKDIR /workspace

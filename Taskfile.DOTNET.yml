@@ -1,0 +1,9 @@
+version: "3"
+
+tasks:
+  list:sdks:
+    cmds:
+      - dotnet --list-sdks
+  list:runtimes:
+    cmds:
+      - dotnet --list-runtimes
