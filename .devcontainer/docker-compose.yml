@@ -27,6 +27,7 @@ services:
       # - ./.config/nvim:/root/.config/nvim:cached
     # Command to run when the container starts.
     # 'sleep infinity' keeps the container running indefinitely so VS Code can attach.
+    init: true
     command: sleep infinity
 
     # Environment variables can be defined here if needed
