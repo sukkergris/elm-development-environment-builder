@@ -1,14 +1,28 @@
 version: "3"
 
+vars:
+  # Platforms every published image is built for.
+  IMAGE_PLATFORMS: linux/amd64,linux/arm64
+  # Multi-platform build driven by build/docker-compose.yml, so image name,
+  # tag and build context live in one place. DOCKER_USERNAME, REPO_NAME and
+  # IMAGE_TAG come from build/.env (loaded by the root Taskfile.yml); in CI
+  # DOCKER_USERNAME is overridden by the repository variable.
+  BAKE: docker buildx bake -f docker-compose.yml --set '*.platform={{.IMAGE_PLATFORMS}}'
+
 tasks:
   build:
-    desc: Build using version number from .env
+    desc: Build using version number from .env - for the HOST's own CPU architecture
     cmds:
       - docker compose -f build/docker-compose.yml build app
 
-  push:
-    desc: Push image to registry (requires DOCKER_USERNAME, REPO_NAME, IMAGE_TAG in .env)
-    deps:
-      - build
+  multi:
+    desc: Build the image for every platform in IMAGE_PLATFORMS, without pushing
+    dir: build
     cmds:
-      - docker compose -f build/docker-compose.yml push app
+      - '{{.BAKE}}'
+
+  publish:
+    desc: Build the image for every platform in IMAGE_PLATFORMS and push it (requires docker login)
+    dir: build
+    cmds:
+      - '{{.BAKE}} --push'

@@ -1,0 +1,41 @@
+version: "3"
+
+# Run the GitHub Actions workflows locally with act (brew install act).
+# Runner images are mapped in .actrc. Variables and secrets come from
+# gitignored files next to the workflows, mirroring the repository
+# variable DOCKER_USERNAME and secret DOCKERHUB_ACCESSTOKEN_RW on GitHub.
+
+vars:
+  github_workflows: .github/workflows
+  github_vars_file: '{{.github_workflows}}/.vars'
+  github_secrets_file: '{{.github_workflows}}/.secrets'
+
+tasks:
+  lint:
+    desc: Lint the GitHub Actions workflow files
+    cmds:
+      - actionlint
+
+  list:
+    desc: List the jobs act can run
+    cmds:
+      - act -l
+
+  ci:
+    desc: Run the CI workflow locally - builds amd64 + arm64 without pushing
+    preconditions:
+      - sh: test -f {{.github_vars_file}}
+        msg: "Missing {{.github_vars_file}} - see build/README.md"
+    cmds:
+      - ./scripts/ci/run-workflow.sh ci --var-file "{{.github_vars_file}}" {{.CLI_ARGS}}
+
+  release:
+    desc: Run the release workflow locally - PUSHES IMAGE_TAG from build/.env to Docker Hub
+    preconditions:
+      - sh: test -f {{.github_vars_file}}
+        msg: "Missing {{.github_vars_file}} - see build/README.md"
+      - sh: test -f {{.github_secrets_file}}
+        msg: "Missing {{.github_secrets_file}} - see build/README.md"
+    prompt: This publishes a real image to Docker Hub. Continue?
+    cmds:
+      - ./scripts/ci/run-workflow.sh release workflow_dispatch --var-file "{{.github_vars_file}}" --secret-file "{{.github_secrets_file}}" {{.CLI_ARGS}}

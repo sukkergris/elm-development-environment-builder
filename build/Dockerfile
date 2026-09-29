@@ -56,14 +56,22 @@ RUN groupadd --gid $USER_GID $USERNAME && \
     # Remove pw from every sudo making me able to play more. Requires sudo is installed. DON'T EVER USE FOR PRODUCTION!
     echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Install latest nvim
-RUN NVIM_FILE="nvim-linux-arm64.tar.gz" && \
-    echo "Installing Neovim for ARM64 (Mac M3)..." && \
-    curl -LO "https://github.com/neovim/neovim/releases/latest/download/${NVIM_FILE}" && \
+# Target architecture is set automatically by BuildKit (amd64 | arm64)
+ARG TARGETARCH
+
+# Install Neovim (pinned version)
+ENV NVIM_VERSION=v0.12.5
+RUN case "${TARGETARCH}" in \
+        amd64) NVIM_ARCH="x86_64" ;; \
+        arm64) NVIM_ARCH="arm64" ;; \
+        *) echo "Unsupported TARGETARCH: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    NVIM_FILE="nvim-linux-${NVIM_ARCH}.tar.gz" && \
+    curl -fLO "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/${NVIM_FILE}" && \
     tar -C /opt -xzf "${NVIM_FILE}" && \
     rm "${NVIM_FILE}" && \
-        # Link the binary to /usr/local/bin so it's globally available - remember to add '/usr/local/bin/' to path!
-    ln -s /opt/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
+    # Link the binary to /usr/local/bin so it's globally available - remember to add '/usr/local/bin/' to path!
+    ln -s "/opt/nvim-linux-${NVIM_ARCH}/bin/nvim" /usr/local/bin/nvim
 
 # Install .NET SDK and runtimes (consolidated into one layer, fixed versions)
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
@@ -77,13 +85,16 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh && \
 # Install Elm and tools (consolidated, removed unnecessary args)
 ENV ELM_VERSION=0.19.2
 ENV TASK_VERSION=v3.52.0
-RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/${ELM_VERSION}/elm-0.19.2-linux-arm.gz && \
-# RUN curl -L -o elm.gz https://github.com/elm/compiler/releases/download/${ELM_VERSION}/binary-for-linux-64-bit.gz && \
+RUN case "${TARGETARCH}" in \
+        amd64) ELM_ARCH="x64"; TASK_ARCH="amd64" ;; \
+        arm64) ELM_ARCH="arm"; TASK_ARCH="arm64" ;; \
+        *) echo "Unsupported TARGETARCH: ${TARGETARCH}" && exit 1 ;; \
+    esac && \
+    curl -fL -o elm.gz "https://github.com/elm/compiler/releases/download/${ELM_VERSION}/elm-${ELM_VERSION}-linux-${ELM_ARCH}.gz" && \
     gunzip elm.gz && \
     chmod +x elm && \
     mv elm /usr/local/bin/elm && \
-    TASK_URL="https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_arm64.tar.gz" && \
-    curl -L "$TASK_URL" | tar -xz -C /usr/local/bin task
+    curl -fL "https://github.com/go-task/task/releases/download/${TASK_VERSION}/task_linux_${TASK_ARCH}.tar.gz" | tar -xz -C /usr/local/bin task
 
 # Switch to non-root user for remaining setup
 USER $USERNAME

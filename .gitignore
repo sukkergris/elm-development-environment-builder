@@ -290,3 +290,7 @@ elm/wwwroot/elm.*.js
 elm/wwwroot/elm.js
 
 
+
+# act (local GitHub Actions)
+.secrets
+.vars

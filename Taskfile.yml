@@ -1,5 +1,7 @@
 version: "3"
 
+dotenv: ["build/.env"]
+
 tasks:
   default:
     desc: List all available tasks
@@ -12,4 +14,7 @@ includes:
     dir: .
   build:
     taskfile: ./Taskfile.DOCKER.yml
+    dir: .
+  act:
+    taskfile: ./Taskfile.ACT.yml
     dir: .
