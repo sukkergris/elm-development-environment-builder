@@ -1,4 +1,4 @@
-FROM debian:12-slim
+FROM debian:13-slim
 
 # Use bash for the shell (default is sh)
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -25,9 +25,9 @@ RUN apt-get update && \
     python3-dev \
     libffi-dev \
     libssl-dev \
+    libicu76 \
     cargo \
     make \
-    yarn \
     git \
     openssh-client \
     xclip \
@@ -109,10 +109,12 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
     nvm install "$NODE_VERSION" && \
     nvm alias default "$NODE_VERSION" && \
     nvm use default && \
+    npm install --global yarn && \
     node_bin="$NVM_DIR/versions/node/$(nvm version default)/bin" && \
     sudo ln -sf "$node_bin/node" /usr/local/bin/node && \
     sudo ln -sf "$node_bin/npm"  /usr/local/bin/npm && \
-    sudo ln -sf "$node_bin/npx"  /usr/local/bin/npx
+    sudo ln -sf "$node_bin/npx"  /usr/local/bin/npx && \
+    sudo ln -sf "$node_bin/yarn" /usr/local/bin/yarn
 
 # Install user-specific tools in one layer
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \

@@ -5,11 +5,11 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
 [![.NET SDK 10.0.100](https://img.shields.io/badge/.NET%20SDK-10.0.100-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 
-A containerized development environment for Elm projects, running on Debian 12 slim. This repository provides everything you need to start building Elm applications with a consistent, reproducible environment.
+A containerized development environment for Elm projects, running on Debian 13 slim. This repository provides everything you need to start building Elm applications with a consistent, reproducible environment.
 
 ## 🚀 Features
 
-- **Debian 12 slim** base image
+- **Debian 13 slim** base image
 - **Elm 0.19.1** pre-installed with common tools:
   - elm-test
   - elm-format
